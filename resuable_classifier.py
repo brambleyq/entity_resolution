@@ -128,4 +128,7 @@ class ResuableClassifier:
         return RandomForestClassifier()
     
 if __name__ == "__main__":
-    pass
+    import tmdb
+    movies = tmdb.Tmdb()
+    movies.read('data/TMDB_movie_dataset_v11.csv')
+    print(movies.adult.head(100))
