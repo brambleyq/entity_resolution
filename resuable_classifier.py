@@ -128,21 +128,4 @@ class ResuableClassifier:
         return RandomForestClassifier()
     
 if __name__ == "__main__":
-    import duq_330_2025.winequality
-    wq = duq_330_2025.winequality.WineQuality()
-    wq.read('data/wine+quality.zip')
-    df = wq.df
-
-    labels = df['quality'] > 5
-    features = [['acitity','sulphates','alcohol']]
-    features = df.drop(['quality'],axis=1)
-
-    log_reg = ResuableClassifier('logistical_regression')
-    log_reg.train(features,labels)
-    log_reg.save('data/model_log_reg')
-    log_reg.load('data/model_log_reg')
-
-    ran_for = ResuableClassifier('random_forest')
-    ran_for.train(features,labels)
-    ran_for.save('data/model_ran_for')
-    ran_for.load('data/model_ran_for')
+    pass
