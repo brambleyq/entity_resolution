@@ -1,47 +1,54 @@
 import pandas as pd
-import numpy as np
 
 class Tmdb:
-    def __init__(self):
-        self.df:pd.DataFrame = None
-        self.popular:pd.DataFrame = None
-        self.train = None
-        self.test = None
-        self.columns = None
-        self.safe = None
-        self.adult = None
+    def __init__(self,path:str):
+        """reads in a the movie database data from a csv file
 
-    def read(self, path:str):
-        self.df = pd.read_csv(path)
+        Args:
+            path (str): location of the movie data base csv
+        """
+        self.df: pd.DataFrame = pd.read_csv(path)
+        self._clean_df_columns()
+        # going to want to seperate these anyway so its done here
         self.safe = self.df.loc[ ~ self.df['adult']]
         self.adult = self.df.loc[self.df['adult']]
-        self.columns = self.df.columns
-        self.popular = self.df.loc[self.df['popularity'] > 1]
-
-    def training(self,test_frac: float = 0.1):
-        """ Return ONLY the training data.
-        Idendify the training data if it does not yet exist
-        """
-        if self.train is None:
-            self._train_test_split(test_frac)    
-        return self.train
     
-    def testing(self,test_frac: float = 0.1):
-        """ Return ONLY the training data.
-        Idendify the training data if it does not yet exist
-        """
-        if self.test is None:
-            self._train_test_split(test_frac)
-        return self.test
+    def _clean_df_columns(self):
+        """fix column names to be lower case and _ sep"""
+        mapper = {
+        'id':'id',
+        'title':'title',
+        'vote_average':'rating',
+        'vote_count':'num_votes',
+        'status':'status',
+        'release_date':'release_date',
+        'revenue':'revenue',
+        'runtime':'runtime',
+        'adult':'adult',
+        'budget':'budget',
+        'imdb_id':'imdb_id',
+        'original_language':'original_language',
+        'original_title': 'original_title',
+        'overview':'summary',
+        'popularity':'popularity',
+        'tagline':'tagline',
+        'genres':'genres',
+        'production_companies':'production_companies',
+        'production_countries':'production_countries',
+        'spoken_languages':'languages',
+        'keywords':'keywords'
+        }
+        self.df = self.df.rename(columns=mapper)[mapper.values()]
 
-    # if it starts with an underscore you are not allowed
-    # to reference it from another file
-    def _train_test_split(self, test_frac: float = 0.1):
-        all_rows = np.arange(len(self.df))
-        np.random.shuffle(all_rows)
-        test_n_rows = round(len(self.df)*test_frac)
-        test_rows = all_rows[:test_n_rows]
-        train_rows = all_rows[test_n_rows:]
-        
-        self.test = self.df.loc[test_rows].reset_index(drop=True)
-        self.train = self.df.loc[train_rows].reset_index(drop=True)
+
+    def _clean_data(self):
+        """make the data more usable"""
+        # splits each of the names in pi names by its ;
+        # self.df['pi_names'] = self.df['pi_names'].str.split(';')
+        # makes a seperate row for each name in teh split 'pi_names'
+        # self.df = self.df.explode('pi_names')
+
+
+if __name__ == "__main__":
+    movies = Tmdb("data/TMDB_movie_dataset_v11.csv")
+    print(movies.df)
