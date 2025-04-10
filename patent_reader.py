@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 import xml.etree.ElementTree as ET
-import sqlalchemy
 import sqlite3
 import pandas as pd
 
