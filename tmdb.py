@@ -9,6 +9,7 @@ class Tmdb:
         """
         self.df: pd.DataFrame = pd.read_csv(path)
         self._clean_df_columns()
+        self._clean_data()
         # going to want to seperate these anyway so its done here
         self.safe = self.df.loc[ ~ self.df['adult']]
         self.adult = self.df.loc[self.df['adult']]
@@ -40,13 +41,11 @@ class Tmdb:
         }
         self.df = self.df.rename(columns=mapper)[mapper.values()]
 
-
     def _clean_data(self):
         """make the data more usable"""
-        # splits each of the names in pi names by its ;
-        # self.df['pi_names'] = self.df['pi_names'].str.split(';')
-        # makes a seperate row for each name in teh split 'pi_names'
-        # self.df = self.df.explode('pi_names')
+        self.df.dropna(subset=['title'],inplace=True)
+        # to combat repeat titles the year will be put after every title in ()
+        self.df['title'] = self.df.apply(lambda row: row['title'] + '' if pd.isna(row['release_date']) else f' ({row['release_date'].split('-')[0]})', axis=1)
 
 
 if __name__ == "__main__":
