@@ -2,13 +2,14 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+import xgboost as xgb
 import pandas as pd
 import pickle
 import os
 import json
 
 
-class ResuableClassifier:
+class ReusableClassifier:
     def __init__(self, model_type: str):
         """Create a classifier, storing a model and metadata.
 
@@ -26,6 +27,8 @@ class ResuableClassifier:
             self._model = self._create_logistic_progression()
         elif model_type == 'random_forest':
             self._model = self._create_random_forest()
+        elif model_type == 'xgboost':
+            self._model = self._create_xgboost()
         else:
             raise ValueError('not a valid model type')
     
@@ -70,8 +73,12 @@ class ResuableClassifier:
 
 
     def predict(self,features:pd.DataFrame):
-        self._scalar.transform(features)
-        self._model.predict(features)
+        features = self._scalar.transform(features)
+        return self._model.predict(features)
+    
+    def predict_proba(self,features:pd.DataFrame):
+        features = self._scalar.transform(features)
+        return [ps[1] for ps in self._model.predict_proba(features)]
 
     def save(self,path:str):
         """save model
@@ -123,12 +130,30 @@ class ResuableClassifier:
         return LogisticRegression()
     
     def _create_random_forest(self):
-        """create a new logistic regression model from sklearn
-        """
+        """create a new logistic regression model from sklearn"""
         return RandomForestClassifier()
     
+    def _create_xgboost(self):
+        """create a new xgboost model"""
+        return xgb.XGBClassifier()
+    
+    
 if __name__ == "__main__":
-    import tmdb
-    movies = tmdb.Tmdb()
-    movies.read('data/TMDB_movie_dataset_v11.csv')
-    print(movies.adult.head(100))
+    import winequality
+    wq = winequality.WineQuality()
+    wq.read('data/wine+quality.zip')
+    df = wq.df
+
+    labels = df['quality'] > 5
+    features = [['acitity','sulphates','alcohol']]
+    features = df.drop(['quality'],axis=1)
+
+    log_reg = ReusableClassifier('logistical_regression')
+    log_reg.train(features,labels)
+    log_reg.save('data/model_log_reg')
+    log_reg.load('data/model_log_reg')
+
+    ran_for = ReusableClassifier('random_forest')
+    ran_for.train(features,labels)
+    ran_for.save('data/model_ran_for')
+    ran_for.load('data/model_ran_for')
