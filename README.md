@@ -3,7 +3,8 @@
 ## What is Entity Resolution?
     Entity resolution is the process of matching entitities from two seperate sets of data that might
     have different formats, nameing conventions, or typos. These entities can be people in two seperate 
-    phone books, connecting nobel prize winners and patent holders, or a cell service providers customerbase with an electronics stores customers. 
+    phone books, connecting nobel prize winners and patent holders, or a cell service providers 
+    customerbase with an electronics stores customers. 
 
 ## Matching Data Together
     To combine these data sets you can match overlapping data that is exactly the same so if a username 
